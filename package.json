@@ -1,0 +1,51 @@
+{
+  "name": "chat",
+  "version": "0.0.1",
+  "description": "chat for a technical test",
+  "scripts": {
+    "start:client": "npm --prefix client start",
+    "start:server": "npm --prefix server start",
+    "build:client": "npm --prefix client run build",
+    "build:server": "npm --prefix server run build",
+    "build": "npm run build:server & npm run build:client",
+    "test": "jest",
+    "test:CI": "jest --ci",
+    "test:CI:coverage": "jest --ci --coverage",
+    "prepare": "husky install",
+    "postinstall": "cd server && npm install && cd ../client && npm install && cd ..",
+    "lint": "eslint -f unix \"{server,client}/**/*.ts\"",
+    "ci:eslint": "npm run lint -- -f json -o ./coverage/eslint-report.json",
+    "ci:generate:documentation": "typedoc"
+  },
+  "bugs": {
+    "url": "https://github.com/thib3113/chat/issues"
+  },
+  "author": {
+    "email": "thibaut@severac.fr",
+    "name": "Thibaut severac"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/thib3113/chat.git"
+  },
+  "license": "MIT",
+  "engines": {
+    "node": ">= 14"
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "4.31.0",
+    "@typescript-eslint/parser": "4.31.0",
+    "eslint": "7.32.0",
+    "eslint-config-prettier": "8.3.0",
+    "eslint-plugin-prettier": "4.0.0",
+    "eslint-plugin-tsdoc": "0.2.14",
+    "husky": "7.0.2",
+    "jest": "27.1.1",
+    "jest-environment-node": "27.1.1",
+    "jest-sonar": "0.2.12",
+    "prettier": "2.4.0",
+    "ts-jest": "27.0.5",
+    "ts-node": "10.2.1",
+    "typedoc": "0.22.3"
+  }
+}
