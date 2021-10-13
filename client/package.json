@@ -4,12 +4,13 @@
   "main": "index.js",
   "license": "MIT",
   "scripts": {
-    "start": "node -r source-map-support/register ../build/client/index.js",
-    "debug": "tsc && node -r source-map-support/register ../build/client/index.js",
+    "start": "node -r source-map-support/register ../build/client/run.js",
+    "debug": "tsc && node -r source-map-support/register ../build/client/run.js",
     "build": "tsc"
   },
   "devDependencies": {
     "dotenv": "10.0.0",
+    "source-map-support": "0.5.20",
     "typescript": "4.4.3"
   }
 }

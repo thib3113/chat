@@ -4,8 +4,8 @@
   "main": "index.js",
   "license": "MIT",
   "scripts": {
-    "start": "node -r source-map-support/register ../build/server/index.js",
-    "debug": "tsc && node -r source-map-support/register ../build/server/index.js",
+    "start": "node -r source-map-support/register ../build/server/run.js",
+    "debug": "tsc && node -r source-map-support/register ../build/server/run.js",
     "build": "tsc"
   },
   "devDependencies": {

@@ -15,7 +15,7 @@
     "postinstall": "cd server && npm install && cd ../client && npm install && cd ..",
     "lint": "eslint -f unix \"{server,client}/**/*.ts\"",
     "ci:eslint": "npm run lint -- -f json -o ./coverage/eslint-report.json",
-    "ci:generate:documentation": "typedoc"
+    "ci:generate:documentation": "cd server && npx typedoc && cd ../client && npx typedoc && cd .."
   },
   "bugs": {
     "url": "https://github.com/thib3113/chat/issues"
@@ -45,7 +45,6 @@
     "jest-sonar": "0.2.12",
     "prettier": "2.4.0",
     "ts-jest": "27.0.5",
-    "ts-node": "10.2.1",
-    "typedoc": "0.22.3"
+    "ts-node": "10.2.1"
   }
 }

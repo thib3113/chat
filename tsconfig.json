@@ -14,6 +14,7 @@
     "tests"
   ],
   "include": [
-    "src/**/*.ts"
+    "client/**/*.ts",
+    "server/**/*.ts"
   ]
 }
