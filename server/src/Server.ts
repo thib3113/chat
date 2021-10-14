@@ -1,21 +1,26 @@
-import express, {Express} from "express";
-import http, { createServer } from "http";
-import {Server as SocketServer, Socket} from "socket.io";
+import express, { Express } from 'express';
+import http, { createServer } from 'http';
+import { Server as SocketServer, Socket } from 'socket.io';
+import { PluginInitializer } from './PluginInitializer';
+import { Users } from './Users';
 
 export class Server {
     private httpServer: http.Server;
     private app: Express;
     private io: SocketServer;
     private port;
+    private pluginInitializer: PluginInitializer;
 
     public async init(): Promise<this> {
         this.app = express();
         this.httpServer = createServer(this.app);
-        this.io = new SocketServer(this.httpServer, { /* options */ });
+        this.io = new SocketServer(this.httpServer, {
+            /* options */
+        });
+
+        this.pluginInitializer = new PluginInitializer(this.io);
 
         this.io.on('connection', (socket) => {
-            console.log('client connected : ', socket.id);
-
             this.registerListeners(socket);
         });
 
@@ -25,34 +30,38 @@ export class Server {
     }
 
     public async start(): Promise<this> {
-        await new Promise(resolve => {
+        await new Promise((resolve) => {
             this.httpServer.listen(this.port, () => {
                 console.log(`server listen on port ${this.port}`);
                 resolve(null);
             });
-        })
+        });
         return this;
     }
 
     private registerListeners(socket: Socket) {
-        socket.use((pReq, next) => {
-            const req = [...pReq];
-            console.log(req.shift(), 'called with', ...req);
-            next();
-        });
+        // socket.use((pReq, next) => {
+        //     const req = [...pReq];
+        //     console.log(req.shift(), 'called with', ...req);
+        //     next();
+        // });
         //init pong response
         socket.on('ping', () => {
             socket.emit('pong');
         });
 
         socket.on('disconnect', () => {
-            console.log('client disconnected : ', socket.id);
-
             this.unregisterListeners(socket);
         });
+
+        //create a user with this id
+        Users.createNew(socket);
+
+        this.pluginInitializer.addToSocket(socket);
     }
 
     private unregisterListeners(socket: Socket) {
         socket.removeAllListeners();
+        this.pluginInitializer.removeFromSocket(socket);
     }
 }

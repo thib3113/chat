@@ -15,6 +15,7 @@
   },
   "dependencies": {
     "@types/node": "^16.10.5",
+    "chalk": "^4.1.2",
     "socket.io-client": "^4.2.0"
   }
 }
