@@ -1,9 +1,10 @@
 import { IPlugin } from './IPlugin';
 import { IPluginHelp } from './IPluginHelp';
-import { User, Users } from '../Users';
-import { Server, Socket } from 'socket.io';
+import { Users } from '../Users';
 import { CLISanitize, sendMSGAsSystem } from '../utils';
 import { UserException } from '../Exceptions/UserException';
+import { IPluginContext } from './IPluginContext';
+import { EPluginEvents } from './EPluginEvents';
 
 enum EUserPluginCommands {
     NICK = 'nick',
@@ -31,7 +32,8 @@ export class UserPlugin implements IPlugin {
         }
     }
 
-    async handle(pCmd: string, args: string, user: User, socket: Socket, socketServer: Server): Promise<void> {
+    async handleCommand(pCmd: string, args: string, context: IPluginContext): Promise<void> {
+        const { socket, user } = context;
         const cmd = pCmd as EUserPluginCommands;
 
         const existingUser = Users.getFromNickName(args);
@@ -57,11 +59,16 @@ export class UserPlugin implements IPlugin {
         }
 
         if (cmd === EUserPluginCommands.WHOAMI) {
-            socket.emit('msg', sendMSGAsSystem(`your nickName is @${user.nickName}`));
+            if (user.nickName) {
+                socket.emit('msg', sendMSGAsSystem(`your nickName is @${user.nickName}`));
+            } else {
+                socket.emit('msg', sendMSGAsSystem(`you doesn't have a nickName. Use command /nick`));
+            }
         }
     }
 
-    modifyText(str: string, user: User, socket: Socket, socketServer: Server): string {
+    filterText(str: string, context: IPluginContext): string {
+        const { user } = context;
         // check if user has a nickName
         if (!user.nickName || !user.nickName.trim()) {
             throw new UserException('you need to set a nickName before posting .\n Use /nick <name> to set a nickName');
@@ -70,10 +77,12 @@ export class UserPlugin implements IPlugin {
         return str;
     }
 
-    handleDisconnection(user: User, socket: Socket, socketServer: Server): void {
-        if (user.nickName) {
+    handleEvents(event: EPluginEvents, context: IPluginContext): void {
+        const { socket, user } = context;
+        if (event === EPluginEvents.DISCONNECTION) {
             socket.broadcast.emit('msg', sendMSGAsSystem(`@${user.nickName} vient de se déconnecter`));
             console.log(`user ${user.nickName} just disconnected (id:${socket.id})`);
+            Users.delete(socket.id);
         }
     }
 }

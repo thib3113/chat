@@ -3,6 +3,7 @@ import http, { createServer } from 'http';
 import { Server as SocketServer, Socket } from 'socket.io';
 import { PluginInitializer } from './PluginInitializer';
 import { Users } from './Users';
+import { EPluginEvents } from './plugins/EPluginEvents';
 
 export class Server {
     private httpServer: http.Server;
@@ -52,16 +53,17 @@ export class Server {
 
         socket.on('disconnect', () => {
             this.unregisterListeners(socket);
+            this.pluginInitializer.handleEvent(EPluginEvents.DISCONNECTION, socket);
         });
 
         //create a user with this id
         Users.createNew(socket);
 
         this.pluginInitializer.addToSocket(socket);
+        this.pluginInitializer.handleEvent(EPluginEvents.CONNECTION, socket);
     }
 
     private unregisterListeners(socket: Socket) {
         socket.removeAllListeners();
-        this.pluginInitializer.removeFromSocket(socket);
     }
 }

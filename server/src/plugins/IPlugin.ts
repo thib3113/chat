@@ -1,6 +1,6 @@
-import { IPluginHelp } from './IPluginHelp';
-import { User } from '../Users';
-import { Server, Socket } from 'socket.io';
+import type { IPluginHelp } from './IPluginHelp';
+import type { IPluginContext } from './IPluginContext';
+import type { EPluginEvents } from './EPluginEvents';
 
 export interface IPlugin {
     /**
@@ -18,26 +18,21 @@ export interface IPlugin {
      * Handle function for this command
      * @param cmd - the current command
      * @param args - the other args for this command
-     * @param user - the current user
-     * @param socket - the current socket
-     * @param socketServer - the global socketServer
+     * @param context - {@link IPluginContext}
      */
-    handle(cmd: string, args: string, user: User, socket: Socket, socketServer: Server): Promise<void>;
+    handleCommand(cmd: string, args: string, context: IPluginContext): Promise<void>;
 
     /**
      * handle / modify a text from a user
      * @param text - the text
-     * @param user - the current user
-     * @param socket - the current socket
-     * @param socketServer - the global socketServer
+     * @param context - {@link IPluginContext}
      */
-    modifyText?: (text: string, user: User, socket: Socket, socketServer: Server) => string;
+    filterText?: (text: string, context: IPluginContext) => string;
 
     /**
      * handle the disconnection of an user
-     * @param user - the current user
-     * @param socket - the current socket
-     * @param socketServer - the global socketServer
+     * @param event - {@link EPluginEvents}
+     * @param context - {@link IPluginContext}
      */
-    handleDisconnection?: (user: User, socket: Socket, socketServer: Server) => void;
+    handleEvents?: (event: EPluginEvents, context: IPluginContext) => void;
 }

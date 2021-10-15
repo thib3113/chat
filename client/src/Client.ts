@@ -38,6 +38,12 @@ export class Client {
             if (this.currentNickName) {
                 //send nick command automatically
                 this.socket.emit('cmd', `/nick ${this.currentNickName}`);
+            } else {
+                console.log(chalk.bold('============================'));
+                console.log(
+                    chalk.bold(`Welcome on this chat, please use the command /nick to set a nickName . Or use /help to show the help`)
+                );
+                console.log(chalk.bold('============================'));
             }
         });
 

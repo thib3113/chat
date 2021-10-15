@@ -1,18 +1,28 @@
-import { plugins } from './plugins';
+import { internalPlugins, plugins } from './plugins';
 import { Server, Socket } from 'socket.io';
 import { IPlugin } from './plugins/IPlugin';
 import { UserException } from './Exceptions/UserException';
 import { Users } from './Users';
 import { CLISanitize, sendMSGAsSystem } from './utils';
 import { IMessage } from './IMessage';
+import { EPluginEvents } from './plugins/EPluginEvents';
 
 export class PluginInitializer {
-    private plugins: Array<IPlugin>;
-    private socketServer: Server;
+    get plugins(): Array<IPlugin> {
+        return this._plugins;
+    }
+    private readonly _plugins: Array<IPlugin>;
+    readonly socketServer: Server;
+
+    get internalPlugins(): Array<IPlugin> {
+        return this._internalPlugins;
+    }
+    private readonly _internalPlugins: Array<IPlugin>;
 
     constructor(socketServer: Server) {
         this.socketServer = socketServer;
-        this.plugins = Object.values<new () => IPlugin>(plugins).map((plugin) => new plugin());
+        this._plugins = Object.values<new () => IPlugin>(plugins).map((plugin) => new plugin());
+        this._internalPlugins = Object.values<new () => IPlugin>(internalPlugins).map((plugin) => new plugin());
     }
 
     private errorHandler(e: Error, socket: Socket) {
@@ -29,8 +39,9 @@ export class PluginInitializer {
             try {
                 const textSplit = text.split(' ');
                 const cmd = textSplit.shift()?.substr(1);
-                //search this command in plugins
-                const plugin = this.plugins.find((p) => p.commands.includes(cmd));
+                //search this command in plugins ( first search in internalPlugins, and then in plugins )
+                const plugin =
+                    this._internalPlugins.find((p) => p.commands.includes(cmd)) ?? this._plugins.find((p) => p.commands.includes(cmd));
 
                 if (!plugin) {
                     throw new UserException(`unknown command /${cmd}`);
@@ -43,7 +54,11 @@ export class PluginInitializer {
                 }
 
                 //call the handle function of the plugin selected
-                await plugin.handle(cmd, textSplit.join(' '), user, socket, this.socketServer);
+                await plugin.handleCommand(cmd, textSplit.join(' '), {
+                    pluginInitializer: this,
+                    user,
+                    socket
+                });
             } catch (e) {
                 this.errorHandler(e, socket);
             }
@@ -60,8 +75,14 @@ export class PluginInitializer {
 
                 text = CLISanitize(text);
 
-                this.plugins.forEach((p) => {
-                    text = p.modifyText ? p.modifyText(text, user, socket, this.socketServer) : text;
+                [...this._internalPlugins, ...this._plugins].forEach((p) => {
+                    text = p.filterText
+                        ? p.filterText(text, {
+                              pluginInitializer: this,
+                              user,
+                              socket
+                          })
+                        : text;
                 });
 
                 const msg = {
@@ -77,7 +98,7 @@ export class PluginInitializer {
         });
     }
 
-    removeFromSocket(socket: Socket) {
+    handleEvent(event: EPluginEvents, socket: Socket): void {
         try {
             //get current user
             const user = Users.getFromSocket(socket.id);
@@ -85,11 +106,15 @@ export class PluginInitializer {
                 throw new Error('fail to get user');
             }
 
-            this.plugins.forEach((p) => {
-                p.handleDisconnection ? p.handleDisconnection(user, socket, this.socketServer) : '';
+            this._plugins.forEach((p) => {
+                p.handleEvents
+                    ? p.handleEvents(event, {
+                          pluginInitializer: this,
+                          user,
+                          socket
+                      })
+                    : '';
             });
-
-            Users.delete(socket.id);
         } catch (e) {
             this.errorHandler(e, socket);
         }
