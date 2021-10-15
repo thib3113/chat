@@ -1,6 +1,6 @@
 export * from './ESocketEvents';
 export * from './Exceptions';
-export * from './plugins';
+export * from './Plugins';
 export * from './Users';
 export * from './global';
 export * from './IMessage';

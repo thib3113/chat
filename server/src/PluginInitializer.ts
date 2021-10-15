@@ -1,6 +1,5 @@
-import { internalPlugins, plugins } from './plugins';
 import { Server, Socket } from 'socket.io';
-import { IPlugin, EPluginEvents } from './Plugins';
+import { IPlugin, EPluginEvents, internalPlugins, plugins } from './Plugins';
 import { UserException } from './Exceptions';
 import { Users } from './Users';
 import { CLISanitize, sendMSGAsSystem } from './utils';

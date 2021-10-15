@@ -3,7 +3,7 @@ import http, { createServer } from 'http';
 import { Server as SocketServer, Socket } from 'socket.io';
 import { PluginInitializer } from './PluginInitializer';
 import { Users } from './Users';
-import { EPluginEvents } from './plugins/EPluginEvents';
+import { EPluginEvents } from './Plugins';
 
 export class Server {
     private httpServer: http.Server;
