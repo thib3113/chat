@@ -1,4 +1,5 @@
 import { IMessage } from './IMessage';
+
 /**
  * this function will sanitize . But limit to ASCII
  * @TODO allow UTF-8 ?

@@ -1,2 +1,3 @@
-export * from './User'
-export * from './Users'
+export * from './IUserCreateParams';
+export * from './User';
+export * from './Users';

@@ -1,11 +1,10 @@
 import { internalPlugins, plugins } from './plugins';
 import { Server, Socket } from 'socket.io';
-import { IPlugin } from './plugins/IPlugin';
-import { UserException } from './Exceptions/UserException';
+import { IPlugin, EPluginEvents } from './Plugins';
+import { UserException } from './Exceptions';
 import { Users } from './Users';
 import { CLISanitize, sendMSGAsSystem } from './utils';
 import { IMessage } from './IMessage';
-import { EPluginEvents } from './plugins/EPluginEvents';
 
 export class PluginInitializer {
     get plugins(): Array<IPlugin> {

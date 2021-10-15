@@ -1,5 +1,8 @@
 import path from 'path';
 
+/**
+ * custom error base
+ */
 export class __Error implements Error {
     public stack: string;
     protected _message: string;

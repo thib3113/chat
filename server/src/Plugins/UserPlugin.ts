@@ -2,11 +2,11 @@ import { IPlugin } from './IPlugin';
 import { IPluginHelp } from './IPluginHelp';
 import { Users } from '../Users';
 import { CLISanitize, sendMSGAsSystem } from '../utils';
-import { UserException } from '../Exceptions/UserException';
+import { UserException } from '../Exceptions';
 import { IPluginContext } from './IPluginContext';
 import { EPluginEvents } from './EPluginEvents';
 
-enum EUserPluginCommands {
+export enum EUserPluginCommands {
     NICK = 'nick',
     WHOAMI = 'whoami'
 }

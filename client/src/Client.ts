@@ -1,8 +1,8 @@
 import { io, Socket } from 'socket.io-client';
 import repl, { REPLServer } from 'repl';
 import chalk from 'chalk';
-import { IMessage } from './IMessage';
 import { escapeRegex } from './utils';
+import { IMessage } from './IMessage';
 
 export class Client {
     private serverUrl: string;
