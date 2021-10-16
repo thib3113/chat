@@ -5,11 +5,16 @@ import { CLISanitize, sendMSGAsSystem } from '../utils';
 import { UserException } from '../Exceptions';
 import { IPluginContext } from './IPluginContext';
 import { EPluginEvents } from './EPluginEvents';
+import path from 'path';
+import { root } from '../root';
+import * as fs from 'fs';
 
 export enum EUserPluginCommands {
     NICK = 'nick',
     WHOAMI = 'whoami'
 }
+
+const accessLogPath = path.join(root, '..', 'access.log');
 
 export class UserPlugin implements IPlugin {
     commands: Array<EUserPluginCommands> = Object.values(EUserPluginCommands).filter((cmd) => !Number.isInteger(cmd));
@@ -54,7 +59,11 @@ export class UserPlugin implements IPlugin {
             } else {
                 socket.emit('msg', sendMSGAsSystem(`Hello @${user.nickName}`));
                 socket.broadcast.emit('msg', sendMSGAsSystem(`@${user.nickName} just connected`));
-                console.log(`user ${user.nickName} just connected (id:${socket.id})`);
+
+                const log = `user ${user.nickName} just connected (id:${socket.id})`;
+                console.log(log);
+                //log to file
+                this.logToFile(log);
             }
         }
 
@@ -77,12 +86,25 @@ export class UserPlugin implements IPlugin {
         return str;
     }
 
+    /**
+     * log the current string to the access Log
+     * @param str
+     */
+    logToFile(str) {
+        console.log(accessLogPath);
+        fs.appendFileSync(accessLogPath, `${str}\n`);
+    }
+
     handleEvents(event: EPluginEvents, context: IPluginContext): void {
         const { socket, user } = context;
         if (event === EPluginEvents.DISCONNECTION) {
             if (user.nickName) {
                 socket.broadcast.emit('msg', sendMSGAsSystem(`@${user.nickName} just disconnected`));
-                console.log(`user ${user.nickName} just disconnected (id:${socket.id})`);
+
+                const log = `user ${user.nickName} just disconnected (id:${socket.id})`;
+                console.log(log);
+                //log to file
+                this.logToFile(log);
             }
             Users.delete(socket.id);
         }
