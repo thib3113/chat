@@ -31,7 +31,7 @@ you cal also use `npm start` in the folders `server` or `client` .
 ### Documentation
 The technical documentation is available here : https://thib3113.github.io/chat/modules.html
 
-The use documentation is available here : https://github.com/thib3113/chat/wiki/Documentation
+The use documentation is available here : https://github.com/thib3113/chat/wiki
 
 ### API
 The only API avalaible is used to get metrics (on the port logged by the server on start) :
