@@ -2,12 +2,13 @@ import type { IPlugin } from './IPlugin';
 import { UserPlugin } from './UserPlugin';
 import { HelpPlugin } from './HelpPlugin';
 import { MetricsPlugin } from './MetricsPlugin';
+import { CowPlugin } from './CowPlugin';
 
 /**
  * Here will be a list of plugins constructor
  */
 export const plugins: Array<new (...args) => IPlugin> = [];
-
+plugins.push(CowPlugin);
 /**
  * Here will be a list of internal plugins constructor
  */
