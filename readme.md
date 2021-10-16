@@ -33,6 +33,19 @@ The technical documentation is available here : https://thib3113.github.io/chat/
 
 The user documentation is available here : https://github.com/thib3113/chat/wiki
 
+### Configuration
+#### Server
+For the server, you can configure the listening port by setting the environment variable `PORT`
+```dotenv
+PORT=3000
+```
+
+#### Client
+For the client, you can configure the server location by setting the environment variable `CHAT_SERVER`
+```dotenv
+CHAT_SERVER=http://localhost:3000
+```
+
 ### API
 The only API avalaible is used to get metrics (on the port logged by the server on start) :
 ```

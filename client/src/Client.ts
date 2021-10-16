@@ -29,6 +29,8 @@ export class Client {
         //start the ping loop
         this.pingLoop();
 
+        console.log(`connecting to server ${this.serverUrl}`);
+
         this.socket.on('set_nickname', (nickName: string) => {
             this.currentNickName = nickName;
         });
@@ -39,6 +41,8 @@ export class Client {
                 //send nick command automatically
                 this.socket.emit('cmd', `/nick ${this.currentNickName}`);
             } else {
+                console.clear();
+                console.log(`connected to ${this.serverUrl}`);
                 console.log(chalk.bold('============================'));
                 console.log(
                     chalk.bold(`Welcome on this chat, please use the command /nick to set a nickName . Or use /help to show the help`)
