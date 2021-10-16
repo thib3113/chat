@@ -80,8 +80,10 @@ export class UserPlugin implements IPlugin {
     handleEvents(event: EPluginEvents, context: IPluginContext): void {
         const { socket, user } = context;
         if (event === EPluginEvents.DISCONNECTION) {
-            socket.broadcast.emit('msg', sendMSGAsSystem(`@${user.nickName} just disconnected`));
-            console.log(`user ${user.nickName} just disconnected (id:${socket.id})`);
+            if (user.nickName) {
+                socket.broadcast.emit('msg', sendMSGAsSystem(`@${user.nickName} just disconnected`));
+                console.log(`user ${user.nickName} just disconnected (id:${socket.id})`);
+            }
             Users.delete(socket.id);
         }
     }
