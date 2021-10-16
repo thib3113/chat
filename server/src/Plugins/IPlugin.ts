@@ -2,6 +2,9 @@ import type { IPluginHelp } from './IPluginHelp';
 import type { IPluginContext } from './IPluginContext';
 import type { EPluginEvents } from './EPluginEvents';
 
+/**
+ * describe the functions needed by a plugin
+ */
 export interface IPlugin {
     /**
      * list of commands for this plugin

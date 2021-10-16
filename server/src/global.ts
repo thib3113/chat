@@ -1,3 +1,6 @@
+/**
+ * all colors that are proposed by chalk
+ */
 export const CLIColors = [
     'black',
     'red',
