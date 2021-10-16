@@ -52,8 +52,8 @@ export class UserPlugin implements IPlugin {
                 socket.broadcast.emit('msg', sendMSGAsSystem(`@${oldNickName} just renamed to @${user.nickName}`));
                 console.log(`user ${oldNickName} just renamed to ${user.nickName} (id:${socket.id})`);
             } else {
-                socket.emit('msg', sendMSGAsSystem(`Bonjour @${user.nickName}`));
-                socket.broadcast.emit('msg', sendMSGAsSystem(`@${user.nickName} vient de se connecter`));
+                socket.emit('msg', sendMSGAsSystem(`Hello @${user.nickName}`));
+                socket.broadcast.emit('msg', sendMSGAsSystem(`@${user.nickName} just connected`));
                 console.log(`user ${user.nickName} just connected (id:${socket.id})`);
             }
         }
@@ -80,7 +80,7 @@ export class UserPlugin implements IPlugin {
     handleEvents(event: EPluginEvents, context: IPluginContext): void {
         const { socket, user } = context;
         if (event === EPluginEvents.DISCONNECTION) {
-            socket.broadcast.emit('msg', sendMSGAsSystem(`@${user.nickName} vient de se déconnecter`));
+            socket.broadcast.emit('msg', sendMSGAsSystem(`@${user.nickName} just disconnected`));
             console.log(`user ${user.nickName} just disconnected (id:${socket.id})`);
             Users.delete(socket.id);
         }
