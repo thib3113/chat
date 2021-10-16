@@ -92,8 +92,8 @@ export class Client {
 
                 const timing = Date.now() - this.pingStart.getTime();
 
-                //send ping timing to the server, for stats
-                this.socket.emit('ping_result', timing);
+                //send ping timing to the server, for stats (with an hidden command)
+                this.socket.emit('cmd', `/ping_result ${timing}`);
             });
 
             this.pingStart = new Date();

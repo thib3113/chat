@@ -19,6 +19,8 @@ export class HelpPlugin implements IPlugin {
             ...pluginInitializer.internalPlugins,
             ...pluginInitializer.plugins
         ]
+            //only select plugin with commands
+            .filter((p) => p.commands)
             .map((p) =>
                 p.commands.map((c) => {
                     const help = p.getHelp(c);

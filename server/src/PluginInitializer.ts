@@ -4,8 +4,10 @@ import { UserException } from './Exceptions';
 import { Users } from './Users';
 import { CLISanitize, sendMSGAsSystem } from './utils';
 import { IMessage } from './IMessage';
+import { Express } from 'express';
 
 export class PluginInitializer {
+    public expressServer: Express;
     get plugins(): Array<IPlugin> {
         return this._plugins;
     }
@@ -17,17 +19,20 @@ export class PluginInitializer {
     }
     private readonly _internalPlugins: Array<IPlugin>;
 
-    constructor(socketServer: Server) {
+    constructor(socketServer: Server, app: Express) {
         this.socketServer = socketServer;
-        this._plugins = Object.values<new () => IPlugin>(plugins).map((plugin) => new plugin());
-        this._internalPlugins = Object.values<new () => IPlugin>(internalPlugins).map((plugin) => new plugin());
+        this.expressServer = app;
+        this._plugins = Object.values<new (initializer: PluginInitializer) => IPlugin>(plugins).map((plugin) => new plugin(this));
+        this._internalPlugins = Object.values<new (initializer: PluginInitializer) => IPlugin>(internalPlugins).map(
+            (plugin) => new plugin(this)
+        );
     }
 
     private errorHandler(e: Error, socket: Socket) {
-        console.error(e);
         if (e instanceof UserException) {
             socket.emit('msg', sendMSGAsSystem(e.message));
         } else {
+            console.error(e);
             socket.emit('msg', sendMSGAsSystem('unknown error'));
         }
     }
@@ -39,7 +44,8 @@ export class PluginInitializer {
                 const cmd = textSplit.shift()?.substr(1);
                 //search this command in plugins ( first search in internalPlugins, and then in plugins )
                 const plugin =
-                    this._internalPlugins.find((p) => p.commands.includes(cmd)) ?? this._plugins.find((p) => p.commands.includes(cmd));
+                    this._internalPlugins.find((p) => p.commands?.includes(cmd) || p.hiddenCommands?.includes(cmd)) ??
+                    this._plugins.find((p) => p.commands?.includes(cmd) || p.hiddenCommands?.includes(cmd));
 
                 if (!plugin) {
                     throw new UserException(`unknown command /${cmd}`);
@@ -104,14 +110,13 @@ export class PluginInitializer {
                 throw new Error('fail to get user');
             }
 
-            this._plugins.forEach((p) => {
-                p.handleEvents
-                    ? p.handleEvents(event, {
-                          pluginInitializer: this,
-                          user,
-                          socket
-                      })
-                    : '';
+            [...this._internalPlugins, ...this._plugins].forEach((p) => {
+                p.handleEvents &&
+                    p.handleEvents(event, {
+                        pluginInitializer: this,
+                        user,
+                        socket
+                    });
             });
         } catch (e) {
             this.errorHandler(e, socket);

@@ -19,7 +19,7 @@ export class Server {
             /* options */
         });
 
-        this.pluginInitializer = new PluginInitializer(this.io);
+        this.pluginInitializer = new PluginInitializer(this.io, this.app);
 
         this.io.on('connection', (socket) => {
             this.registerListeners(socket);

@@ -9,6 +9,11 @@ export interface IPlugin {
     commands: Array<string>;
 
     /**
+     * list of hidden commands for this plugin (no help, only internals commands)
+     */
+    hiddenCommands?: Array<string>;
+
+    /**
      * return the help message / possible arguments for this function
      * @param cmd - the command
      */
